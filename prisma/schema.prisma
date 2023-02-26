@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model GanbaList {
+  id Int @id @default(autoincrement())
+  title String
+  items GanbaItem[]
+  doList GanbaDoList[]
+}
+
+model GanbaItem {
+  id Int @id @default(autoincrement())
+  list GanbaList @relation(fields: [list_id], references: [id])
+  list_id Int
+  doItems GanbaDoItem[]
+  name String
+}
+
+// 実行リスト
+model GanbaDoList {
+  id Int @id @default(autoincrement())
+  // 対象日
+  do_dt DateTime
+  list GanbaList @relation(fields: [list_id], references: [id])
+  list_id Int
+  doItems GanbaDoItem[]
+}
+
+model GanbaDoItem {
+  id Int @id @default(autoincrement())
+  item GanbaItem @relation(fields: [item_id], references: [id])
+  item_id Int
+  do_list GanbaDoList @relation(fields: [do_list_id], references: [id])
+  do_list_id Int
+  // チェック入れた日
+  do_dt DateTime?
+  done Boolean @default(false)
+}
+
